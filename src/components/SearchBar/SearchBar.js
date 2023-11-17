@@ -1,4 +1,3 @@
-import { Component } from 'react';
 import { toast } from 'react-toastify';
 import { AiOutlineSearch } from 'react-icons/ai';
 import {
@@ -8,44 +7,42 @@ import {
   SearchFormLabelStyled,
   SearchFormInputStyled,
 } from './SearchBar.styled';
+import { useState } from 'react';
 
-export class Searchbar extends Component {
-  state = {
-    searchQuery: '',
+export const Searchbar = ({ onFormSubmit }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchQueryChange = event => {
+    setSearchQuery(event.currentTarget.value.toLowerCase());
   };
 
-  handleSearchQueryChange = event => {
-    this.setState({ searchQuery: event.currentTarget.value.toLowerCase() });
-  };
-
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
 
-    if (this.state.searchQuery.trim() !== '') {
-      this.props.onFormSubmit(this.state.searchQuery);
-      this.setState(this.searchQuery);
-    } else toast.error('Input field must not be empty');
+    if (searchQuery.trim() !== '') {
+      onFormSubmit(searchQuery);
+    } else {
+      toast.error('Input field must not be empty');
+    }
   };
 
-  render() {
-    return (
-      <SearchBarStyled>
-        <SearchFormStyled onSubmit={this.handleSubmit}>
-          <SearchBtn type="submit">
-            <SearchFormLabelStyled>Search</SearchFormLabelStyled>
-            <AiOutlineSearch />
-          </SearchBtn>
+  return (
+    <SearchBarStyled>
+      <SearchFormStyled onSubmit={handleSubmit}>
+        <SearchBtn type="submit">
+          <SearchFormLabelStyled>Search</SearchFormLabelStyled>
+          <AiOutlineSearch />
+        </SearchBtn>
 
-          <SearchFormInputStyled
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-            value={this.state.searchQuery}
-            onChange={this.handleSearchQueryChange}
-          />
-        </SearchFormStyled>
-      </SearchBarStyled>
-    );
-  }
-}
+        <SearchFormInputStyled
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          value={searchQuery}
+          onChange={handleSearchQueryChange}
+        />
+      </SearchFormStyled>
+    </SearchBarStyled>
+  );
+};
