@@ -56,6 +56,11 @@ export const App = () => {
       }
     };
 
+    const handleScroll = () => {
+      // Ваш обробник подій прокрутки
+      scroll.scrollToBottom();
+    };
+
     const cleanup = () => {
       setIsLoading(false);
     };
@@ -64,7 +69,12 @@ export const App = () => {
       fetchData();
     }
 
-    return cleanup;
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      cleanup();
+    };
   }, [searchQuery, page, per_page, randomIndex]);
 
   const handleFormSubmit = newQuery => {
