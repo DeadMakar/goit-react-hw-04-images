@@ -68,16 +68,10 @@ export const App = () => {
       fetchData();
     }
 
-    const handleScrollWithPassive = () => {
-      handleScroll();
-    };
-
-    window.addEventListener('scroll', handleScrollWithPassive, {
-      passive: true,
-    });
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', handleScrollWithPassive);
+      window.removeEventListener('scroll', handleScroll);
       cleanup();
     };
   }, [searchQuery, page, per_page, randomIndex]);
