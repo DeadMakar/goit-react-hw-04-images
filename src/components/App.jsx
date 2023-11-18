@@ -6,8 +6,6 @@ import { Loader } from './Loader/Loader';
 import { MyModal } from './Modal/Modal';
 import toast, { Toaster } from 'react-hot-toast';
 import { GlobalStyle } from './GlobalStyle';
-import { animateScroll as scroll } from 'react-scroll';
-import { generateRandomIndex } from './utils/generateRandomIndex';
 import { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
 
@@ -22,7 +20,6 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [availablePages, setAvailablePages] = useState(0);
-  const [randomIndex, setRandomIndex] = useState(generateRandomIndex());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,10 +35,11 @@ export const App = () => {
         const { hits, totalHits } = initialImages;
 
         if (hits.length > 0) {
-          setDataImages(prevDataImages => [
-            ...prevDataImages,
-            ...hits.map(image => ({ ...image, id: nanoid() })),
-          ]);
+          setDataImages(prevDataImages =>
+            prevDataImages.concat(
+              hits.map(image => ({ ...image, id: nanoid() }))
+            )
+          );
           setAvailablePages(Math.ceil(totalHits / per_page));
           toast.success('Successfully found!');
         } else {
@@ -56,10 +54,6 @@ export const App = () => {
       }
     };
 
-    const handleScroll = () => {
-      scroll.scrollToBottom();
-    };
-
     const cleanup = () => {
       setIsLoading(false);
     };
@@ -68,24 +62,17 @@ export const App = () => {
       fetchData();
     }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      cleanup();
-    };
-  }, [searchQuery, page, per_page, randomIndex]);
+    return cleanup;
+  }, [searchQuery, page, per_page]);
 
   const handleFormSubmit = newQuery => {
     setSearchQuery(newQuery);
     setPage(1);
     setDataImages([]);
-    setRandomIndex(generateRandomIndex());
   };
 
   const handleLoadMore = () => {
     setPage(prevPage => prevPage + 1);
-    scroll.scrollToBottom();
   };
 
   const handleOpenModal = image => {
