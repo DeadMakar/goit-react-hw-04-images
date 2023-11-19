@@ -20,6 +20,8 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [availablePages, setAvailablePages] = useState(0);
+  const [lastQueryId, setLastQueryId] = useState('');
+  const [currentQueryId, setCurrentQueryId] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +29,7 @@ export const App = () => {
         setIsLoading(true);
         setError(false);
 
-        if (searchQuery.trim() === '') {
+        if (searchQuery.trim() === '' || lastQueryId === currentQueryId) {
           return;
         }
 
@@ -35,11 +37,10 @@ export const App = () => {
         const { hits, totalHits } = initialImages;
 
         if (hits.length > 0) {
-          setDataImages(prevDataImages =>
-            prevDataImages.concat(
-              hits.map(image => ({ ...image, id: nanoid() }))
-            )
-          );
+          setDataImages(prevDataImages => [
+            ...prevDataImages,
+            ...hits.map(image => ({ ...image, id: nanoid() })),
+          ]);
           setAvailablePages(Math.ceil(totalHits / per_page));
           toast.success('Successfully found!');
         } else {
@@ -63,12 +64,14 @@ export const App = () => {
     }
 
     return cleanup;
-  }, [searchQuery, page, per_page]);
+  }, [searchQuery, page, per_page, lastQueryId, currentQueryId]);
 
   const handleFormSubmit = newQuery => {
     setSearchQuery(newQuery);
     setPage(1);
     setDataImages([]);
+    setLastQueryId(currentQueryId);
+    setCurrentQueryId(nanoid());
   };
 
   const handleLoadMore = () => {
