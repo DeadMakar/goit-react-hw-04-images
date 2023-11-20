@@ -27,7 +27,7 @@ export const App = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        setError(false);
+        setError(null);
 
         if (searchQuery.trim() === '' || lastQueryId === currentQueryId) {
           return;
@@ -37,10 +37,7 @@ export const App = () => {
         const { hits, totalHits } = initialImages;
 
         if (hits.length > 0) {
-          setDataImages(prevDataImages => [
-            ...prevDataImages,
-            ...hits.map(image => ({ ...image, id: nanoid() })),
-          ]);
+          setDataImages(prevDataImages => [...prevDataImages, ...hits]);
           setAvailablePages(Math.ceil(totalHits / per_page));
           toast.success('Successfully found!');
         } else {
@@ -49,6 +46,7 @@ export const App = () => {
           );
         }
       } catch (error) {
+        console.error('Error fetching images:', error);
         setError(error);
       } finally {
         setIsLoading(false);
